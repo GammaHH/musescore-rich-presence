@@ -1,80 +1,61 @@
 import QtQuick 2.2
-import QtQuick.Dialogs 1.1
 import MuseScore 3.0
 import FileIO 3.0
 
 MuseScore {
-    version: "1.0"
+    version: "1.1.1"
     title: "Current Score Info"
-    description: qsTr("A plugin that outputs the current score's information to a text file in the installation directory")
+    description: qsTr("Outputs the current score information for Discord Rich Presence.")
     categoryCode: "current-score-info"
     thumbnailName: "current_score_info.png"
-    onRun: {
-        if (Qt.csitimer == undefined || Qt.csitimer == null) {
-            Qt.csitimer = csitimer;
-            Qt.csitimer.start();
-            startedDialog.open();
-        } else {
-            if (Qt.csitimer.running) {
-                Qt.csitimer.stop();
-                Qt.csitimer = null;
-                stoppedDialog.open();
-            }
-        }
-    }
+    requiresScore: false
+
     FileIO {
         id: outfile
-        source: "../ScoreInfo.json"
-        onError: console.log(msg)
+        onError: console.log("[RichPresence] FileIO error: " + msg)
     }
+
     Timer {
         id: csitimer
         interval: 1000
-        running: false
         repeat: true
-        onTriggered: {
-            makeScoreInfo();
-        }
+        running: false
+        onTriggered: makeScoreInfo()
     }
-    MessageDialog {
-        id: startedDialog
-        title: "Plugin Has Been Enabled"
-        text: qsTr("The plugin has been enabled.")
-        onAccepted: {
-            
-        }
-        visible: false
-    }
-    MessageDialog {
-        id: stoppedDialog
-        title: "Plugin Has Been Disabled"
-        text: qsTr("The plugin has been disabled.")
-        onAccepted: {
 
-        }
-        visible: false
+    onRun: {
+        outfile.source = outfile.tempPath() + "/musescore-rich-presence.json";
+
+        console.log("[RichPresence] Plugin started");
+        console.log("[RichPresence] Output: " + outfile.source);
+
+        var probe = outfile.write('{"probe":true}');
+        console.log("[RichPresence] Probe write: " + probe);
+
+        makeScoreInfo();
+        csitimer.start();
     }
+
     function makeScoreInfo() {
-        if (curScore == null) {
+        outfile.source = outfile.tempPath() + "/musescore-rich-presence.json";
+
+        if (curScore === null) {
             outfile.write("{}");
-        } else {
-            const score = fetchScoreInfo(curScore, null);
-            outfile.write(JSON.stringify(score, null, 2));
+            return;
         }
-    }
-    function fetchScoreInfo(obj, score) {
-        if (score == null) {
-            score = {};
-        }
-        for (var prop in obj) {
-            if (typeof obj[prop] != "function" && typeof obj[prop] != "object") {
-                if (typeof obj[prop] == "object") {
-                    score[prop] = fetchScoreInfo(obj[prop], score);
-                } else {
-                    score[prop] = obj[prop];
-                }
-            }
-        }
-        return score;
+
+        var score = {
+            scoreName: String(curScore.scoreName || ""),
+            title: String(curScore.title || ""),
+            subtitle: String(curScore.metaTag("subtitle") || ""),
+            composer: String(curScore.composer || ""),
+            nmeasures: Number(curScore.nmeasures || 0),
+            npages: Number(curScore.npages || 0),
+            nstaves: Number(curScore.nstaves || 0),
+            ntracks: Number(curScore.ntracks || 0),
+            mscoreVersion: String(curScore.mscoreVersion || "")
+        };
+
+        outfile.write(JSON.stringify(score, null, 2));
     }
 }
