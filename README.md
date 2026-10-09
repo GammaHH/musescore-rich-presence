@@ -14,6 +14,13 @@ English | [中文](README_zh.md)
 
 </div>
 
+<p align="center">
+  <img alt="platform" src="https://img.shields.io/badge/platform-Windows-blueviolet">
+  <img alt="python" src="https://img.shields.io/badge/Python-3.12-blue">
+  <img alt="release" src="https://img.shields.io/github/v/release/GammaHH/musescore-rich-presence">
+  <img alt="commit activity" src="https://img.shields.io/github/commit-activity/m/GammaHH/musescore-rich-presence?color=%23ff69b4">
+  <img alt="stars" src="https://img.shields.io/github/stars/GammaHH/musescore-rich-presence?style=social">
+</p>
 ---
 
 Discord Rich Presence integration for MuseScore Studio.
