@@ -21,6 +21,7 @@ English | [中文](README_zh.md)
   <img alt="commit activity" src="https://img.shields.io/github/commit-activity/m/GammaHH/musescore-rich-presence?color=%23ff69b4">
   <img alt="stars" src="https://img.shields.io/github/stars/GammaHH/musescore-rich-presence?style=social">
 </p>
+
 ---
 
 Discord Rich Presence integration for MuseScore Studio.
